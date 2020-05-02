@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Mynews</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+    <style>
+
+      .header{
+        border-radius: 4px;
+        text-align: center;
+
+      }
+
+
+    </style>
+
+  </head>
+
+  <body>
+
+
+    <div id="root"></div>
+    <script type="text/babel">
+
+
+    class Navbrand extends React.Component {
+      constructor(props) {
+        super(props)
+
+      }
+
+      render()
+      {
+        return(
+            <a class="navbar-brand" href="#">{this.props.brandname}</a>
+        )
+      }
+    }
+
+    class CollapseButton extends React.Component {
+      constructor(props) {
+        super(props)
+      }
+
+      render(){
+
+        return(
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        )
+
+      }
+    }
+
+    class Navlinks extends React.Component{
+      constructor(props){
+        super(props)
+
+      }
+
+      render(){
+          return(
+            <ul class="navbar-nav">
+              {this.props.links.map(link =>(<li class="nav-item"><a class="nav-link" href="#">{link}</a></li>))}
+            </ul>
+          )
+      }
+
+
+    }
+
+    class Navigationbar extends React.Component {
+      constructor(props) {
+        super(props)
+        this.state={
+
+          links : ["Home","About","Contact"],
+          brandname : "Mybrand"
+        }
+      }
+
+      render(){
+        return(
+            <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+              <Navbrand brandname={this.state.brandname}/>
+              <CollapseButton />
+              <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                <Navlinks links={this.state.links}/>
+              </div>
+            </nav>
+
+        )
+
+      }
+
+
+    }
+
+
+    class Contents extends React.Component {
+      constructor(props) {
+        super(props)
+        this.state={
+          isLoaded : false,
+          count : 0,
+          items :[]
+        }
+
+      }
+
+      componentDidMount() {
+
+        fetch("http://newsapi.org/v2/top-headlines?country=in&category=technology&apiKey=f0597c3b2f81427ca2c47ae854474efb")
+          .then(res => res.json())
+          .then(
+            (result) => {
+              this.setState({
+                isLoaded: true,
+                count: result.totalResults,
+                items: result.articles
+              })
+            },
+          )
+     }
+
+     render(){
+       return(
+         <div class="row">
+         {this.state.items.map(item =>(
+           <div class="col-sm-4">
+             <div class="card p-3 my-3">
+                <img class="card-img-top" width="match-parent" src={item.urlToImage} alt="image loading failed"/>
+                <div class="card-body">
+                  <h4 class="card-title">{item.title}</h4>
+                  <p class="card-text">{item.description}</p>
+                  <a href={item.url} class="btn btn-primary">Details</a>
+                </div>
+              </div>
+            </div>
+         ))}
+       </div>
+       )
+     }
+
+    }
+
+    class Header extends React.Component{
+      constructor(props) {
+        super(props)
+      }
+
+      render(){
+        return(
+          <div class="header container-fluid p-3 my-3 bg-secondary text-white">
+              <h1>Latest News</h1>
+          </div>
+        )
+      }
+
+
+
+    }
+
+
+    class MyNewsApp extends React.Component{
+
+      constructor(props) {
+        super(props)
+      }
+
+      render(){
+        return(
+
+          <div class="container-fluid">
+            <Navigationbar />
+            <Header />
+            <Contents />
+          </div>
+        )
+      }
+    }
+
+
+    ReactDOM.render(<MyNewsApp />,document.getElementById('root'))
+
+    </script>
+
+
+  </body>
+</html>
